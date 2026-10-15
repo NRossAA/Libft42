@@ -15,6 +15,9 @@
 
 static int	isset(char c, char const *set)
 {
+	if (!set || !c)
+		return (0);
+
 	int	i;
 
 	i = 0;
@@ -29,27 +32,16 @@ static int	isset(char c, char const *set)
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	size_t	i;
-	size_t	j;
-	size_t	k;
-	size_t	strlen;
-	char	*str;
+	size_t  start;
+          size_t  end;
 
-	i = 0;
-	k = 0;
-	while (isset(s1[i], set))
-		i++;
-	j = ft_strlen(s1) - 1;
-	while (isset(s1[j], set))
-	{
-		k++;
-		j--;
-	}
-	strlen = ft_strlen(s1) - (i + k);
-	str = ft_substr(s1, i, strlen);
-	if (!str)
-		return (NULL);
-	return (str);
+          start = 0;
+          while (s1[start] && isset(s1[start], set))
+                  start++;
+          end = ft_strlen(s1);
+          while (end > start && isset(s1[end - 1], set))
+                  end--;
+          return (ft_substr(s1, start, end - start));
 }
 
 /*int	main (int argc, char **argv)
