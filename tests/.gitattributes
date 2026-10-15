@@ -1,0 +1,3 @@
+# Fins de ligne LF forcées : make sous Linux/WSL ne tolère pas les \r
+# (core.autocrlf=true convertirait sinon ces fichiers en CRLF au checkout).
+* text eol=lf
