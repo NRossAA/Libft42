@@ -4,7 +4,7 @@
 
 /*
 ** Bonus, sujet 42. Une liste vide (t_list *lst == NULL) est un argument
-** valide ; un pointeur de liste NULL (t_list **) ne l'est pas (-> test_ub.c).
+** valide ; un pointeur de liste NULL (t_list **) ne l'est pas (non testé).
 ** Les listes sont construites à la main (sans ft_lstnew) pour que chaque
 ** test ne dépende que de la fonction testée.
 */

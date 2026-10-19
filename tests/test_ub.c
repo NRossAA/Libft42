@@ -6,9 +6,10 @@
 #include "test.h"
 
 /*
-** Arguments dont le comportement est indéfini (libc) ou non spécifié
-** (sujet 42). Aucun résultat n'est "attendu" : on observe ce que font
+** Arguments dont le comportement est indéfini, pour les clones de la libc
+** uniquement. Aucun résultat n'est "attendu" : on observe ce que font
 ** ft_ et la libc, côte à côte. Rien ici n'est compté comme pass/fail.
+** (strnstr n'est pas dans la glibc : seul le côté ft_ est affiché.)
 **
 ** NULL passe par un pointeur volatile : sinon gcc voit l'attribut nonnull
 ** de la glibc (erreur avec -Werror) ou supprime l'appel.
@@ -76,107 +77,6 @@ UB_INT(l_isalpha_min, isalpha(INT_MIN))
 UB_INT(f_toupper_1000, ft_toupper(1000))
 UB_INT(l_toupper_1000, toupper(1000))
 
-static char	map_id(unsigned int i, char c)
-{
-	(void)i;
-	return (c);
-}
-
-static void	iter_id(unsigned int i, char *c)
-{
-	(void)i;
-	(void)c;
-}
-
-static void	del_nop(void *ptr)
-{
-	(void)ptr;
-}
-
-UB_PTR(f_substr, ft_substr(g_null, 0, 5))
-UB_PTR(f_strjoin1, ft_strjoin(g_null, "abc"))
-UB_PTR(f_strjoin2, ft_strjoin("abc", g_null))
-UB_PTR(f_strtrim1, ft_strtrim(g_null, " "))
-UB_PTR(f_strtrim2, ft_strtrim("abc", g_null))
-UB_PTR(f_split, ft_split(g_null, ' '))
-UB_PTR(f_strmapi1, ft_strmapi(g_null, map_id))
-UB_PTR(f_strmapi2, ft_strmapi("abc", NULL))
-UB_VOID(f_striteri1, ft_striteri(g_null, iter_id))
-UB_VOID(f_striteri2, ft_striteri(g_buf, NULL))
-UB_VOID(f_putstr, ft_putstr_fd(g_null, -1))
-UB_VOID(f_putendl, ft_putendl_fd(g_null, -1))
-
-static void	f_add_front_null(void)
-{
-	t_list	n;
-
-	n.content = NULL;
-	n.next = NULL;
-	ft_lstadd_front(NULL, &n);
-	ub_note("retour normal");
-}
-
-static void	f_add_back_null(void)
-{
-	t_list	n;
-
-	n.content = NULL;
-	n.next = NULL;
-	ft_lstadd_back(NULL, &n);
-	ub_note("retour normal");
-}
-
-static void	f_add_back_new_null(void)
-{
-	t_list	n;
-	t_list	*l;
-
-	n.content = NULL;
-	n.next = NULL;
-	l = &n;
-	ft_lstadd_back(&l, NULL);
-	ub_note("retour normal, liste %s", l == &n && n.next == NULL
-		? "inchangée" : "modifiée");
-}
-
-UB_VOID(f_lstclear_null, ft_lstclear(NULL, del_nop))
-
-static void	f_lstclear_del_null(void)
-{
-	t_list	*l;
-
-	l = malloc(sizeof(*l));
-	if (!l)
-		return ;
-	l->content = NULL;
-	l->next = NULL;
-	ft_lstclear(&l, NULL);
-	ub_note("retour normal");
-}
-
-static void	f_lstdelone_del_null(void)
-{
-	t_list	*l;
-
-	l = malloc(sizeof(*l));
-	if (!l)
-		return ;
-	l->content = NULL;
-	l->next = NULL;
-	ft_lstdelone(l, NULL);
-	ub_note("retour normal");
-}
-
-static void	f_lstiter_f_null(void)
-{
-	t_list	n;
-
-	n.content = NULL;
-	n.next = NULL;
-	ft_lstiter(&n, NULL);
-	ub_note("retour normal");
-}
-
 void	suite_ub(void)
 {
 	run_ub("strlen(NULL)", f_strlen, l_strlen);
@@ -204,23 +104,4 @@ void	suite_ub(void)
 	run_ub("atoi(\"99999999999999999999\")", f_atoi_o3, l_atoi_o3);
 	run_ub("isalpha(INT_MIN)", f_isalpha_min, l_isalpha_min);
 	run_ub("toupper(1000)", f_toupper_1000, l_toupper_1000);
-	run_ub("ft_substr(NULL, 0, 5)", f_substr, NULL);
-	run_ub("ft_strjoin(NULL, \"abc\")", f_strjoin1, NULL);
-	run_ub("ft_strjoin(\"abc\", NULL)", f_strjoin2, NULL);
-	run_ub("ft_strtrim(NULL, \" \")", f_strtrim1, NULL);
-	run_ub("ft_strtrim(\"abc\", NULL)", f_strtrim2, NULL);
-	run_ub("ft_split(NULL, ' ')", f_split, NULL);
-	run_ub("ft_strmapi(NULL, f)", f_strmapi1, NULL);
-	run_ub("ft_strmapi(\"abc\", NULL)", f_strmapi2, NULL);
-	run_ub("ft_striteri(NULL, f)", f_striteri1, NULL);
-	run_ub("ft_striteri(\"abc\", NULL)", f_striteri2, NULL);
-	run_ub("ft_putstr_fd(NULL, fd)", f_putstr, NULL);
-	run_ub("ft_putendl_fd(NULL, fd)", f_putendl, NULL);
-	run_ub("ft_lstadd_front(NULL, new)", f_add_front_null, NULL);
-	run_ub("ft_lstadd_back(NULL, new)", f_add_back_null, NULL);
-	run_ub("ft_lstadd_back(&lst, NULL)", f_add_back_new_null, NULL);
-	run_ub("ft_lstclear(NULL, del)", f_lstclear_null, NULL);
-	run_ub("ft_lstclear(&lst, NULL)", f_lstclear_del_null, NULL);
-	run_ub("ft_lstdelone(lst, NULL)", f_lstdelone_del_null, NULL);
-	run_ub("ft_lstiter(lst, NULL)", f_lstiter_f_null, NULL);
 }
